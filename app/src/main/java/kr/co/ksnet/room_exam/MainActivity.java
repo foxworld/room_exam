@@ -1,5 +1,6 @@
 package kr.co.ksnet.room_exam;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -11,6 +12,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.loader.content.AsyncTaskLoader;
 import androidx.room.Room;
 
 import java.util.List;
@@ -34,20 +37,19 @@ public class MainActivity extends AppCompatActivity {
         mTodoEditText = findViewById(R.id.todo_edit);
         mResultTextView = findViewById(R.id.result_text);
 
-        final AppDatabase db = Room.databaseBuilder(this, AppDatabase.class, "todo-db")
-                .allowMainThreadQueries()
-                .build();
+        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         // UI 갱신
-        db.todoDao().getAll().observe(this, todos -> {
+        viewModel.getAll().observe(this, todos -> {
             mResultTextView.setText(todos.toString());
         });
 
         // 버튼클릭시 insert
         findViewById(R.id.add_button).setOnClickListener(v -> {
-            db.todoDao().insert(new Todo(mTodoEditText.getText().toString()));
+            viewModel.insert(new Todo(mTodoEditText.getText().toString()));
+
+            //db.todoDao().insert(new Todo(mTodoEditText.getText().toString()));
             //mResultTextView.setText(db.todoDao().getAll().toString());
         });
-
     }
 }
