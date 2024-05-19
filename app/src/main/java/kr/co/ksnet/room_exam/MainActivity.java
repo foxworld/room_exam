@@ -10,7 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
 import androidx.room.Room;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,11 +38,15 @@ public class MainActivity extends AppCompatActivity {
                 .allowMainThreadQueries()
                 .build();
 
-        mResultTextView.setText(db.todoDao().getAll().toString());
+        // UI 갱신
+        db.todoDao().getAll().observe(this, todos -> {
+            mResultTextView.setText(todos.toString());
+        });
 
+        // 버튼클릭시 insert
         findViewById(R.id.add_button).setOnClickListener(v -> {
             db.todoDao().insert(new Todo(mTodoEditText.getText().toString()));
-            mResultTextView.setText(db.todoDao().getAll().toString());
+            //mResultTextView.setText(db.todoDao().getAll().toString());
         });
 
     }
